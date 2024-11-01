@@ -1,86 +1,51 @@
 # Vinfei
 
+**An eCommerce website for individuals passionate about digital artwork and supporting artists**
 
-
->   This repo doesn't house the assets used to build the vinfei website
-
-Available on heroku at https://vinfeii.herokuapp.com/
-
-**Ecommerce website for people passionate about digital artworks and supporting artists**
-
-
-
-## Key features
-
-
+## Key Features
 
 ### User Management
 
-Login/signup with **email link authentication** 
+- Login/signup with **email link authentication**.
+- The website supports **persistent cookies** and **session cookies**.
 
-Website supports **Persistent cookies** and **session cookies** 
+### Buy Digital Art
 
+- Purchase digital art by visiting the art page (*email authentication required*).
+- Payments require a card and use the **Stripe API** to handle transactions.
+- Utilizes a **webhook** to update/add purchase information to the database and manage artwork transactions.
 
+### Sell Digital Art
 
-### Buy digital art
+- Create digital art cards and **upload your own art** on the profile page using **responsive cards** that adjust to form changes, allowing you to preview what your art will look like on the front page (*email authentication required*).
+- Artwork is **converted to low quality** for thumbnails to prevent users from downloading the full-resolution artwork without purchase.
 
-Buy digital art by visiting artpage, *email authentication required*
+### Art Ownership
 
-Payments require card and use **stripe api** to handle transactions
-
-Uses a **Webhook** to update/add purchase information to database and handle the artwork transaction 
-
-
-
-### Sell digital art
-
-Make digital art cards and **upload your own art** on the profile page utilizing **responsive cards** that respond to changes in forms to accurately see what your art will look like on the front page, *email authentication required*
-
-Artwork gets **converted to low quality** for thumbnails to prevent users from downloading the full resolution artwork without purchasing the artwork
-
-
-
-### Art ownership
-
-Once bought, a user can **download** **the full resolution** of the artwork 
-
-Users can put the artwork on sale again if they wish by making a new card
-
-
+- Once purchased, users can **download the full resolution** of the artwork.
+- Users can resell the artwork by creating a new card.
 
 ### Security
 
-Features implemented to improve security :
+Features implemented to enhance security:
 
--   SQLAlchemy to prevent SQL injections
--   Werkzeug utilities to prevent Cross-site scripting, Injections etc
--   Password hashing for database
--   Email authentication link using email hashing
--   Webhooks to validate purchases and adding information to database
-
-
+- **SQLAlchemy** to prevent SQL injections.
+- **Werkzeug utilities** to protect against cross-site scripting, injections, etc.
+- **Password hashing** for the database.
+- **Email authentication link** using email hashing.
+- **Webhooks** to validate purchases and update the database.
 
 ## Tools
 
+**Frontend**
 
-
-**Frontend** 
-
--   HTML/CSS/Javascript
-
--   Bootstrap
-
--   JQuery, Popper.js
-
--   Sass
-
-    
+- HTML/CSS/JavaScript
+- Bootstrap
+- jQuery, Popper.js
+- Sass
 
 **Backend**
 
--   Python backend framework : **Flask**
--   Database : **SQLite**
--   Wtforms, sqlalchemy, werkzeug utilities
-
-
-
+- Python backend framework: **Flask**
+- Database: **SQLite**
+- WTForms, SQLAlchemy, Werkzeug utilities
