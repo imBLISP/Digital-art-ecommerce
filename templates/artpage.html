@@ -1,0 +1,679 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+<title>Profile page</title>
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+
+{% block body %}
+<nav class="navbar navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <svg class="svg-icon" viewBox="0 0 20 20">
+                <path fill="gold"
+                    d="M5.229,6.531H4.362c-0.239,0-0.434,0.193-0.434,0.434c0,0.239,0.194,0.434,0.434,0.434h0.868c0.24,0,0.434-0.194,0.434-0.434C5.663,6.724,5.469,6.531,5.229,6.531 M10,6.531c-1.916,0-3.47,1.554-3.47,3.47c0,1.916,1.554,3.47,3.47,3.47c1.916,0,3.47-1.555,3.47-3.47C13.47,8.084,11.916,6.531,10,6.531 M11.4,11.447c-0.071,0.164-0.169,0.299-0.294,0.406c-0.124,0.109-0.27,0.191-0.437,0.248c-0.167,0.057-0.298,0.09-0.492,0.098v0.402h-0.35v-0.402c-0.21-0.004-0.352-0.039-0.527-0.1c-0.175-0.064-0.324-0.154-0.449-0.27c-0.124-0.115-0.221-0.258-0.288-0.428c-0.068-0.17-0.1-0.363-0.096-0.583h0.664c-0.004,0.259,0.052,0.464,0.169,0.613c0.116,0.15,0.259,0.229,0.527,0.236v-1.427c-0.159-0.043-0.268-0.095-0.425-0.156c-0.157-0.061-0.299-0.139-0.425-0.235C8.852,9.752,8.75,9.631,8.672,9.486C8.594,9.34,8.556,9.16,8.556,8.944c0-0.189,0.036-0.355,0.108-0.498c0.072-0.144,0.169-0.264,0.292-0.36c0.122-0.097,0.263-0.17,0.422-0.221c0.159-0.052,0.277-0.077,0.451-0.077V7.401h0.35v0.387c0.174,0,0.29,0.023,0.445,0.071c0.155,0.047,0.29,0.118,0.404,0.212c0.115,0.095,0.206,0.215,0.274,0.359c0.067,0.146,0.103,0.315,0.103,0.508H10.74c-0.007-0.201-0.06-0.354-0.154-0.46c-0.096-0.106-0.199-0.159-0.408-0.159v1.244c0.174,0.047,0.296,0.102,0.462,0.165c0.167,0.063,0.314,0.144,0.443,0.241c0.128,0.099,0.23,0.221,0.309,0.366c0.077,0.146,0.116,0.324,0.116,0.536C11.509,11.092,11.473,11.283,11.4,11.447 M18.675,4.795H1.326c-0.479,0-0.868,0.389-0.868,0.868v8.674c0,0.479,0.389,0.867,0.868,0.867h17.349c0.479,0,0.867-0.389,0.867-0.867V5.664C19.542,5.184,19.153,4.795,18.675,4.795M1.76,5.664c0.24,0,0.434,0.193,0.434,0.434C2.193,6.336,2,6.531,1.76,6.531S1.326,6.336,1.326,6.097C1.326,5.857,1.52,5.664,1.76,5.664 M1.76,14.338c-0.24,0-0.434-0.195-0.434-0.434c0-0.24,0.194-0.434,0.434-0.434s0.434,0.193,0.434,0.434C2.193,14.143,2,14.338,1.76,14.338 M18.241,14.338c-0.24,0-0.435-0.195-0.435-0.434c0-0.24,0.194-0.434,0.435-0.434c0.239,0,0.434,0.193,0.434,0.434C18.675,14.143,18.48,14.338,18.241,14.338 M18.675,12.682c-0.137-0.049-0.281-0.08-0.434-0.08c-0.719,0-1.302,0.584-1.302,1.303c0,0.152,0.031,0.297,0.08,0.434H2.981c0.048-0.137,0.08-0.281,0.08-0.434c0-0.719-0.583-1.303-1.301-1.303c-0.153,0-0.297,0.031-0.434,0.08V7.318c0.136,0.049,0.28,0.08,0.434,0.08c0.718,0,1.301-0.583,1.301-1.301c0-0.153-0.032-0.298-0.08-0.434H17.02c-0.049,0.136-0.08,0.28-0.08,0.434c0,0.718,0.583,1.301,1.302,1.301c0.152,0,0.297-0.031,0.434-0.08V12.682z M18.241,6.531c-0.24,0-0.435-0.194-0.435-0.434c0-0.24,0.194-0.434,0.435-0.434c0.239,0,0.434,0.193,0.434,0.434C18.675,6.336,18.48,6.531,18.241,6.531 M9.22,8.896c0,0.095,0.019,0.175,0.058,0.242c0.039,0.066,0.088,0.124,0.148,0.171c0.061,0.047,0.13,0.086,0.21,0.115c0.079,0.028,0.11,0.055,0.192,0.073V8.319c-0.21,0-0.322,0.044-0.437,0.132C9.277,8.54,9.22,8.688,9.22,8.896 M15.639,12.602h-0.868c-0.239,0-0.434,0.195-0.434,0.434c0,0.24,0.194,0.436,0.434,0.436h0.868c0.24,0,0.434-0.195,0.434-0.436C16.072,12.797,15.879,12.602,15.639,12.602 M10.621,10.5c-0.068-0.052-0.145-0.093-0.23-0.124c-0.086-0.031-0.123-0.06-0.212-0.082v1.374c0.209-0.016,0.332-0.076,0.465-0.186c0.134-0.107,0.201-0.281,0.201-0.516c0-0.11-0.02-0.202-0.062-0.277C10.743,10.615,10.688,10.551,10.621,10.5">
+                </path>
+            </svg>
+        </a>
+
+        {% if current_user.is_authenticated %}
+        <form class="d-flex" action="/profile">
+            <button class="black-btn btn top-right-button" type="submit" data-bs-toggle="modal">Profile</button>
+        </form>
+        {% else %}
+        <form class="d-flex loginsignup-container">
+            <button class="black-btn btn top-right-button" type="button" data-bs-toggle="modal"
+                data-bs-target="#loginsignup">Login</button>
+        </form>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="div" style="    text-align: center;
+        font-family: 'Roboto Mono';
+        font-size: 2rem;
+        padding-top: 5vh;">
+            Buy artpiece to download full res
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<div class="container px-2"
+    style="padding-top: 5vh ;padding-bottom: 10vh;align-items: center; display:flex; justify-content:center;">
+
+    <div class="row" style="width:100%">
+        <div class="col-lg artpagebox d-flex flex-wrap align-items-center"
+            style=" padding-left: 0px; padding-right: 0px;justify-content:center">
+            <img class=" artpage-shadow image-contained artpage-shadow" style="max-height: 80%"
+                src="{{url_for('static', filename=('images/artpieces_thumb/'+artname))}}" alt="">
+        </div>
+        <div class="col-lg artpagebox px-md-5" style="display: block;">
+            <div class="row justify-content-center py-5">
+
+                <div class="row">
+                    <div class="col-12 font-overpass p-0" style="text-align: center; height: fit-content">
+                        <div style="font-size: 10vw">
+                            {{ artpiece.displayname }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row py-3" style="text-align: center">
+                    <div class="col-sm-4 py-1" style="padding-top: 2rem; font-size: 2rem; font-family: 'Rajdhani' ">
+                        Creator
+                    </div>
+                    <form action="/profile/{{ artpiece.madeby }}" class="col-sm-8">
+                        <button type="text" class="white-btn-profile btn"
+                            style="height: fit-content;width: fit-content;font-size:2rem;" id="madebybutton">@{{
+                            artpiece.madeby }}</button>
+                    </form>
+
+                </div>
+
+                {% if artpiece.ownedby %}
+
+                <div class="row " style="padding-bottom: 3vh; text-align: center">
+                    <div class="col-sm-4 py-1" style=" padding-top: 2rem; font-size: 2rem; font-family: 'Rajdhani' ">
+                        Owner
+                    </div>
+                    <form action="/profile/{{ artpiece.ownedby }}" class="col-sm-8">
+                        <button type="text" class="white-btn-profile btn"
+                            style="height: fit-content;width: fit-content;font-size:2rem;" id="ownedbybutton">@{{
+                            artpiece.ownedby }}</button>
+                    </form>
+                </div>
+
+                <div class="row py-3" style="width:100%; border-radius: 999px; background-color: darkgray;">
+                    <div class="col-md-6 profile-price" style="text-align: center; overflow-wrap: break-word;">${{
+                        artpiece.price }}</div>
+                    <div class="col-md-6 profile-price" style="color: gray; text-align: center;"> USD </div>
+                </div>
+
+
+                {% else %}
+
+                {% if current_user.is_authenticated %}
+
+                {% if current_user.confirmed == false %}
+
+                <div class="col-sm-6" style="padding-top: 2rem; padding-bottom: 3vh; text-align: center; width: 100%">
+                    <form action="/infopage/emailnotconfirmed">
+                        <button class="white-btn-profile btn" type="submit"
+                            style="height: fit-content;width: 50%;font-size:2rem; color: darkred;"
+                            id="buybutton">Buy</button>
+                    </form>
+                </div>
+
+                {% else %}
+
+                <div class="col-sm-6" style="padding-top: 2rem; padding-bottom: 3vh; text-align: center; width: 100%">
+                    <button class="white-btn-profile btn" type="button" data-bs-toggle="modal"
+                        data-bs-target="#buymodal"
+                        style="height: fit-content;width: 50%;font-size:2rem; color: darkred;"
+                        id="buybutton">Buy</button>
+                </div>
+
+                {% endif %}
+
+                {% else %}
+
+                <div class="col-sm-6" style="padding-top: 2rem; padding-bottom: 3vh; text-align: center; width: 100%">
+                    <button class="white-btn-profile btn" type="button" data-bs-toggle="modal"
+                        data-bs-target="#loginsignup"
+                        style="height: fit-content;width: 50%;font-size:2rem; color: darkred;">Buy</button>
+                </div>
+
+                {% endif %}
+
+                <div class="row py-3" style="width:100%; border-radius: 999px; background-color: black;">
+                    <div class="col-md-6 profile-price" style="text-align: center; overflow-wrap:break-word">${{
+                        artpiece.price }}</div>
+                    <div class="col-md-6 profile-price" style="color: gray; text-align: center;"> USD$ </div>
+                </div>
+
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="jumbotron" style="height: 10vh">
+
+</div>
+
+<div class="jumbotron jumbotron-fluid page-end-container" style="height: 40vh">
+    <div class="container-fluid page-end-black textloop-container">
+        <p class="textloopjumbo py-5">
+            <span>MADE BY VINEET MADE BY VINEET MADE BY VINEET MADE BY VINEET MADE BY VINEET MADE BY
+                VINEET MADE
+                BY
+                VINEET MADE BY VINEET MADE BY VINEET MADE BY VINEET MADE BY VINEET MADE BY VINEET
+                MADE BY VINEET
+                MADE BY
+                VINEET &nbsp;</span>
+        </p>
+    </div>
+</div>
+
+<div class="modal fade2 blur" id="loginsignup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-container">
+            <div class="container p-5">
+
+                <div class="row">
+                    <div class="col modal-button">
+                        <div class="py-4">
+                            <div type="text" id="login" class="white-btn btn">Log in</div>
+                        </div>
+                    </div>
+                    <div class="col modal-button">
+                        <div class="py-4">
+                            <div type="text" id="signup" class="white-btn btn">Sign up</div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="loginform" method="POST" action="/">
+                    <div class="form-group py-2">
+                        <div class="div" style="color: red"> username case sensitive</div>
+                        {{ loginform.hidden_tag() }}
+                        {{ wtf.form_field(loginform.loginUsername) }}
+                    </div>
+                    <div class="form-group py-2">
+                        {{ wtf.form_field(loginform.password) }}
+                    </div>
+                    <div class="form-group py-2">
+                        {{ wtf.form_field(loginform.remember) }}
+                    </div>
+                    <div class="col">
+                        <div class="py-4"><button type="submit" class="black-btn btn">Submit</button></div>
+                    </div>
+                </form>
+
+
+                <form class="d-none" id="signupform" method="POST" action="/">
+                    <div class="form-group py-2">
+                        {{ signupform.hidden_tag() }}
+                        {{ wtf.form_field(signupform.signupUsername) }}
+                    </div>
+                    <div class="form-group py-2">
+                        {{ wtf.form_field(signupform.email) }}
+                    </div>
+                    <div class="form-group py-2">
+                        {{ wtf.form_field(signupform.password) }}
+                    </div>
+                    <div class="col">
+                        <div class="py-4"><button type="submit" class="black-btn btn">Submit</button></div>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade2" id="buymodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" style="align-items:center">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: transparent; border: 0px">
+            <div class="checkout">
+                <div class="credit-card-box">
+                    <div class="flip">
+                        <div class="front">
+                            <div class="chip"></div>
+                            <div class="logo">
+                                <svg version="1.1" id="visa" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="47.834px"
+                                    height="47.834px" viewBox="0 0 47.834 47.834"
+                                    style="enable-background:new 0 0 47.834 47.834;">
+                                    <g>
+                                        <g>
+                                            <path d="M44.688,16.814h-3.004c-0.933,0-1.627,0.254-2.037,1.184l-5.773,13.074h4.083c0,0,0.666-1.758,0.817-2.143
+                                   c0.447,0,4.414,0.006,4.979,0.006c0.116,0.498,0.474,2.137,0.474,2.137h3.607L44.688,16.814z M39.893,26.01
+                                   c0.32-0.819,1.549-3.987,1.549-3.987c-0.021,0.039,0.317-0.825,0.518-1.362l0.262,1.23c0,0,0.745,3.406,0.901,4.119H39.893z
+                                   M34.146,26.404c-0.028,2.963-2.684,4.875-6.771,4.875c-1.743-0.018-3.422-0.361-4.332-0.76l0.547-3.193l0.501,0.228
+                                   c1.277,0.532,2.104,0.747,3.661,0.747c1.117,0,2.313-0.438,2.325-1.393c0.007-0.625-0.501-1.07-2.016-1.77
+                                   c-1.476-0.683-3.43-1.827-3.405-3.876c0.021-2.773,2.729-4.708,6.571-4.708c1.506,0,2.713,0.31,3.483,0.599l-0.526,3.092
+                                   l-0.351-0.165c-0.716-0.288-1.638-0.566-2.91-0.546c-1.522,0-2.228,0.634-2.228,1.227c-0.008,0.668,0.824,1.108,2.184,1.77
+                                   C33.126,23.546,34.163,24.783,34.146,26.404z M0,16.962l0.05-0.286h6.028c0.813,0.031,1.468,0.29,1.694,1.159l1.311,6.304
+                                   C7.795,20.842,4.691,18.099,0,16.962z M17.581,16.812l-6.123,14.239l-4.114,0.007L3.862,19.161
+                                   c2.503,1.602,4.635,4.144,5.386,5.914l0.406,1.469l3.808-9.729L17.581,16.812L17.581,16.812z M19.153,16.8h3.89L20.61,31.066
+                                   h-3.888L19.153,16.8z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="number"></div>
+                            <div class="card-holder">
+                                <label>Card holder</label>
+                                <div></div>
+                            </div>
+                            <div class="card-expiration-date">
+                                <label>Expires</label>
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="back">
+                            <div class="strip"></div>
+                            <div class="logo">
+                                <svg version="1.1" id="visa" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="47.834px"
+                                    height="47.834px" viewBox="0 0 47.834 47.834"
+                                    style="enable-background:new 0 0 47.834 47.834;">
+                                    <g>
+                                        <g>
+                                            <path d="M44.688,16.814h-3.004c-0.933,0-1.627,0.254-2.037,1.184l-5.773,13.074h4.083c0,0,0.666-1.758,0.817-2.143
+                                   c0.447,0,4.414,0.006,4.979,0.006c0.116,0.498,0.474,2.137,0.474,2.137h3.607L44.688,16.814z M39.893,26.01
+                                   c0.32-0.819,1.549-3.987,1.549-3.987c-0.021,0.039,0.317-0.825,0.518-1.362l0.262,1.23c0,0,0.745,3.406,0.901,4.119H39.893z
+                                   M34.146,26.404c-0.028,2.963-2.684,4.875-6.771,4.875c-1.743-0.018-3.422-0.361-4.332-0.76l0.547-3.193l0.501,0.228
+                                   c1.277,0.532,2.104,0.747,3.661,0.747c1.117,0,2.313-0.438,2.325-1.393c0.007-0.625-0.501-1.07-2.016-1.77
+                                   c-1.476-0.683-3.43-1.827-3.405-3.876c0.021-2.773,2.729-4.708,6.571-4.708c1.506,0,2.713,0.31,3.483,0.599l-0.526,3.092
+                                   l-0.351-0.165c-0.716-0.288-1.638-0.566-2.91-0.546c-1.522,0-2.228,0.634-2.228,1.227c-0.008,0.668,0.824,1.108,2.184,1.77
+                                   C33.126,23.546,34.163,24.783,34.146,26.404z M0,16.962l0.05-0.286h6.028c0.813,0.031,1.468,0.29,1.694,1.159l1.311,6.304
+                                   C7.795,20.842,4.691,18.099,0,16.962z M17.581,16.812l-6.123,14.239l-4.114,0.007L3.862,19.161
+                                   c2.503,1.602,4.635,4.144,5.386,5.914l0.406,1.469l3.808-9.729L17.581,16.812L17.581,16.812z M19.153,16.8h3.89L20.61,31.066
+                                   h-3.888L19.153,16.8z" />
+                                        </g>
+                                    </g>
+                                </svg>
+
+                            </div>
+                            <div class="ccv">
+                                <label>CCV</label>
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="payment-form-address">
+                    <h1 style="text-align: center;padding-bottom: 5vh">Billing details</h1>
+                    <div class="row">
+                        <div class="col-md py-3">
+                            <div class="form-outline">
+                                <label class="form-label" for="form6Example1">First name</label>
+                                <input type="text" id="firstnameform" class="form-control nonempty" minlength="4" />
+
+                            </div>
+                        </div>
+                        <div class="col-md py-3">
+                            <div class="form-outline">
+                                <label class="form-label" for="form6Example2">Last name</label>
+                                <input type="text" id="lastnameform" class="form-control nonempty" />
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text input -->
+                    <div class=" col-md-12 py-3">
+                        <label class="form-label" for="form6Example3">Address</label>
+                        <input type="text" id="addressform" class="form-control nonempty" placeholder="Line 1" />
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md py-3">
+                            <label class="form-label" for="form6Example3">Postal code</label>
+                            <input type="text" id="postalcodeform" class="form-control nonempty" placeholder="411093" />
+
+                        </div>
+                        <div class="col-md py-3">
+                            <label class="form-label" for="form6Example3">State</label>
+                            <input type="text" id="stateform" class="form-control nonempty" placeholder="California" />
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md py-3">
+                            <label class="form-label" for="form6Example3">City</label>
+                            <input type="text" id="cityform" class="form-control nonempty"
+                                placeholder="San francisco" />
+
+                        </div>
+                        <div class="col-md py-3">
+                            <!-- id = countryform -->
+                            <label class="form-label" for="countryform">Country</label>
+                            <!-- <input type="text" id="countryform" class="form-control nonempty" placeholder="USA" /> -->
+                            <select class="form-control nonempty" id="countryform">
+                                <option value="" selected="selected">Select Country</option>
+                                <option value="AF">Afghanistan</option>
+                                <option value="AX">Åland Islands</option>
+                                <option value="AL">Albania</option>
+                                <option value="DZ">Algeria</option>
+                                <option value="AS">American Samoa</option>
+                                <option value="AD">Andorra</option>
+                                <option value="AO">Angola</option>
+                                <option value="AI">Anguilla</option>
+                                <option value="AQ">Antarctica</option>
+                                <option value="AG">Antigua and Barbuda</option>
+                                <option value="AR">Argentina</option>
+                                <option value="AM">Armenia</option>
+                                <option value="AW">Aruba</option>
+                                <option value="AU">Australia</option>
+                                <option value="AT">Austria</option>
+                                <option value="AZ">Azerbaijan</option>
+                                <option value="BS">Bahamas</option>
+                                <option value="BH">Bahrain</option>
+                                <option value="BD">Bangladesh</option>
+                                <option value="BB">Barbados</option>
+                                <option value="BY">Belarus</option>
+                                <option value="BE">Belgium</option>
+                                <option value="BZ">Belize</option>
+                                <option value="BJ">Benin</option>
+                                <option value="BM">Bermuda</option>
+                                <option value="BT">Bhutan</option>
+                                <option value="BO">Bolivia, Plurinational State of</option>
+                                <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
+                                <option value="BA">Bosnia and Herzegovina</option>
+                                <option value="BW">Botswana</option>
+                                <option value="BV">Bouvet Island</option>
+                                <option value="BR">Brazil</option>
+                                <option value="IO">British Indian Ocean Territory</option>
+                                <option value="BN">Brunei Darussalam</option>
+                                <option value="BG">Bulgaria</option>
+                                <option value="BF">Burkina Faso</option>
+                                <option value="BI">Burundi</option>
+                                <option value="KH">Cambodia</option>
+                                <option value="CM">Cameroon</option>
+                                <option value="CA">Canada</option>
+                                <option value="CV">Cape Verde</option>
+                                <option value="KY">Cayman Islands</option>
+                                <option value="CF">Central African Republic</option>
+                                <option value="TD">Chad</option>
+                                <option value="CL">Chile</option>
+                                <option value="CN">China</option>
+                                <option value="CX">Christmas Island</option>
+                                <option value="CC">Cocos (Keeling) Islands</option>
+                                <option value="CO">Colombia</option>
+                                <option value="KM">Comoros</option>
+                                <option value="CG">Congo</option>
+                                <option value="CD">Congo, the Democratic Republic of the</option>
+                                <option value="CK">Cook Islands</option>
+                                <option value="CR">Costa Rica</option>
+                                <option value="CI">Côte d'Ivoire</option>
+                                <option value="HR">Croatia</option>
+                                <option value="CU">Cuba</option>
+                                <option value="CW">Curaçao</option>
+                                <option value="CY">Cyprus</option>
+                                <option value="CZ">Czech Republic</option>
+                                <option value="DK">Denmark</option>
+                                <option value="DJ">Djibouti</option>
+                                <option value="DM">Dominica</option>
+                                <option value="DO">Dominican Republic</option>
+                                <option value="EC">Ecuador</option>
+                                <option value="EG">Egypt</option>
+                                <option value="SV">El Salvador</option>
+                                <option value="GQ">Equatorial Guinea</option>
+                                <option value="ER">Eritrea</option>
+                                <option value="EE">Estonia</option>
+                                <option value="ET">Ethiopia</option>
+                                <option value="FK">Falkland Islands (Malvinas)</option>
+                                <option value="FO">Faroe Islands</option>
+                                <option value="FJ">Fiji</option>
+                                <option value="FI">Finland</option>
+                                <option value="FR">France</option>
+                                <option value="GF">French Guiana</option>
+                                <option value="PF">French Polynesia</option>
+                                <option value="TF">French Southern Territories</option>
+                                <option value="GA">Gabon</option>
+                                <option value="GM">Gambia</option>
+                                <option value="GE">Georgia</option>
+                                <option value="DE">Germany</option>
+                                <option value="GH">Ghana</option>
+                                <option value="GI">Gibraltar</option>
+                                <option value="GR">Greece</option>
+                                <option value="GL">Greenland</option>
+                                <option value="GD">Grenada</option>
+                                <option value="GP">Guadeloupe</option>
+                                <option value="GU">Guam</option>
+                                <option value="GT">Guatemala</option>
+                                <option value="GG">Guernsey</option>
+                                <option value="GN">Guinea</option>
+                                <option value="GW">Guinea-Bissau</option>
+                                <option value="GY">Guyana</option>
+                                <option value="HT">Haiti</option>
+                                <option value="HM">Heard Island and McDonald Islands</option>
+                                <option value="VA">Holy See (Vatican City State)</option>
+                                <option value="HN">Honduras</option>
+                                <option value="HK">Hong Kong</option>
+                                <option value="HU">Hungary</option>
+                                <option value="IS">Iceland</option>
+                                <option value="IN">India</option>
+                                <option value="ID">Indonesia</option>
+                                <option value="IR">Iran, Islamic Republic of</option>
+                                <option value="IQ">Iraq</option>
+                                <option value="IE">Ireland</option>
+                                <option value="IM">Isle of Man</option>
+                                <option value="IL">Israel</option>
+                                <option value="IT">Italy</option>
+                                <option value="JM">Jamaica</option>
+                                <option value="JP">Japan</option>
+                                <option value="JE">Jersey</option>
+                                <option value="JO">Jordan</option>
+                                <option value="KZ">Kazakhstan</option>
+                                <option value="KE">Kenya</option>
+                                <option value="KI">Kiribati</option>
+                                <option value="KP">Korea, Democratic People's Republic of</option>
+                                <option value="KR">Korea, Republic of</option>
+                                <option value="KW">Kuwait</option>
+                                <option value="KG">Kyrgyzstan</option>
+                                <option value="LA">Lao People's Democratic Republic</option>
+                                <option value="LV">Latvia</option>
+                                <option value="LB">Lebanon</option>
+                                <option value="LS">Lesotho</option>
+                                <option value="LR">Liberia</option>
+                                <option value="LY">Libya</option>
+                                <option value="LI">Liechtenstein</option>
+                                <option value="LT">Lithuania</option>
+                                <option value="LU">Luxembourg</option>
+                                <option value="MO">Macao</option>
+                                <option value="MK">Macedonia, the former Yugoslav Republic of</option>
+                                <option value="MG">Madagascar</option>
+                                <option value="MW">Malawi</option>
+                                <option value="MY">Malaysia</option>
+                                <option value="MV">Maldives</option>
+                                <option value="ML">Mali</option>
+                                <option value="MT">Malta</option>
+                                <option value="MH">Marshall Islands</option>
+                                <option value="MQ">Martinique</option>
+                                <option value="MR">Mauritania</option>
+                                <option value="MU">Mauritius</option>
+                                <option value="YT">Mayotte</option>
+                                <option value="MX">Mexico</option>
+                                <option value="FM">Micronesia, Federated States of</option>
+                                <option value="MD">Moldova, Republic of</option>
+                                <option value="MC">Monaco</option>
+                                <option value="MN">Mongolia</option>
+                                <option value="ME">Montenegro</option>
+                                <option value="MS">Montserrat</option>
+                                <option value="MA">Morocco</option>
+                                <option value="MZ">Mozambique</option>
+                                <option value="MM">Myanmar</option>
+                                <option value="NA">Namibia</option>
+                                <option value="NR">Nauru</option>
+                                <option value="NP">Nepal</option>
+                                <option value="NL">Netherlands</option>
+                                <option value="NC">New Caledonia</option>
+                                <option value="NZ">New Zealand</option>
+                                <option value="NI">Nicaragua</option>
+                                <option value="NE">Niger</option>
+                                <option value="NG">Nigeria</option>
+                                <option value="NU">Niue</option>
+                                <option value="NF">Norfolk Island</option>
+                                <option value="MP">Northern Mariana Islands</option>
+                                <option value="NO">Norway</option>
+                                <option value="OM">Oman</option>
+                                <option value="PK">Pakistan</option>
+                                <option value="PW">Palau</option>
+                                <option value="PS">Palestinian Territory, Occupied</option>
+                                <option value="PA">Panama</option>
+                                <option value="PG">Papua New Guinea</option>
+                                <option value="PY">Paraguay</option>
+                                <option value="PE">Peru</option>
+                                <option value="PH">Philippines</option>
+                                <option value="PN">Pitcairn</option>
+                                <option value="PL">Poland</option>
+                                <option value="PT">Portugal</option>
+                                <option value="PR">Puerto Rico</option>
+                                <option value="QA">Qatar</option>
+                                <option value="RE">Réunion</option>
+                                <option value="RO">Romania</option>
+                                <option value="RU">Russian Federation</option>
+                                <option value="RW">Rwanda</option>
+                                <option value="BL">Saint Barthélemy</option>
+                                <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+                                <option value="KN">Saint Kitts and Nevis</option>
+                                <option value="LC">Saint Lucia</option>
+                                <option value="MF">Saint Martin (French part)</option>
+                                <option value="PM">Saint Pierre and Miquelon</option>
+                                <option value="VC">Saint Vincent and the Grenadines</option>
+                                <option value="WS">Samoa</option>
+                                <option value="SM">San Marino</option>
+                                <option value="ST">Sao Tome and Principe</option>
+                                <option value="SA">Saudi Arabia</option>
+                                <option value="SN">Senegal</option>
+                                <option value="RS">Serbia</option>
+                                <option value="SC">Seychelles</option>
+                                <option value="SL">Sierra Leone</option>
+                                <option value="SG">Singapore</option>
+                                <option value="SX">Sint Maarten (Dutch part)</option>
+                                <option value="SK">Slovakia</option>
+                                <option value="SI">Slovenia</option>
+                                <option value="SB">Solomon Islands</option>
+                                <option value="SO">Somalia</option>
+                                <option value="ZA">South Africa</option>
+                                <option value="GS">South Georgia and the South Sandwich Islands</option>
+                                <option value="SS">South Sudan</option>
+                                <option value="ES">Spain</option>
+                                <option value="LK">Sri Lanka</option>
+                                <option value="SD">Sudan</option>
+                                <option value="SR">Suriname</option>
+                                <option value="SJ">Svalbard and Jan Mayen</option>
+                                <option value="SZ">Swaziland</option>
+                                <option value="SE">Sweden</option>
+                                <option value="CH">Switzerland</option>
+                                <option value="SY">Syrian Arab Republic</option>
+                                <option value="TW">Taiwan, Province of China</option>
+                                <option value="TJ">Tajikistan</option>
+                                <option value="TZ">Tanzania, United Republic of</option>
+                                <option value="TH">Thailand</option>
+                                <option value="TL">Timor-Leste</option>
+                                <option value="TG">Togo</option>
+                                <option value="TK">Tokelau</option>
+                                <option value="TO">Tonga</option>
+                                <option value="TT">Trinidad and Tobago</option>
+                                <option value="TN">Tunisia</option>
+                                <option value="TR">Turkey</option>
+                                <option value="TM">Turkmenistan</option>
+                                <option value="TC">Turks and Caicos Islands</option>
+                                <option value="TV">Tuvalu</option>
+                                <option value="UG">Uganda</option>
+                                <option value="UA">Ukraine</option>
+                                <option value="AE">United Arab Emirates</option>
+                                <option value="GB">United Kingdom</option>
+                                <option value="US">United States</option>
+                                <option value="UM">United States Minor Outlying Islands</option>
+                                <option value="UY">Uruguay</option>
+                                <option value="UZ">Uzbekistan</option>
+                                <option value="VU">Vanuatu</option>
+                                <option value="VE">Venezuela, Bolivarian Republic of</option>
+                                <option value="VN">Viet Nam</option>
+                                <option value="VG">Virgin Islands, British</option>
+                                <option value="VI">Virgin Islands, U.S.</option>
+                                <option value="WF">Wallis and Futuna</option>
+                                <option value="EH">Western Sahara</option>
+                                <option value="YE">Yemen</option>
+                                <option value="ZM">Zambia</option>
+                                <option value="ZW">Zimbabwe</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-button" style="padding-top: 1rem">
+                        <div class="py-3">
+                            <button name="buybutton" value="Next"
+                                style="height: fit-content; width: fit-content; font-size: 1.7rem; font-family: 'Overpass';"
+                                type="button" class="white-btn btn" id="submitaddress">Next</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="payment-form-card">
+
+                    <div class="row py-2" style="font-family: 'Roboto Mono';
+                    padding-left: 0.5vw;
+                    color: red;">
+                        4242 4242 4242 4242 for payment succeed
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="form-group">
+                            <label for="cardnumberr" class="form-element">Card number</label>
+                            <div id="cardnumberr">
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="form-group col-6">
+                            <label for="cardexpiryy" class="form-element">Expiry date</label>
+                            <div id="cardexpiryy">
+
+                            </div>
+                        </div>
+                        <div class="form-group col-6 hoverflip">
+                            <label for="cardcvcc" class="form-element">Card verification</label>
+                            <div id="cardcvcc">
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="form-group">
+                            <label for="InputName" class="form-element">Cardholder name</label>
+                            <input type="name" class="form-control" id="InputName" aria-describedby="name"
+                                placeholder="Enter name">
+                        </div>
+                    </div>
+
+                    <div class="row py-3" style="color: red">
+                        <div class="form-group">
+                            <div id="card-errors" role="alert">
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-button" style="padding-top: 1rem">
+                        <div class="py-3">
+                            <button name="buybutton" value="buy"
+                                style="height: fit-content; width: fit-content; font-size: 1.7rem; font-family: 'Overpass';"
+                                type="submit" class="white-btn btn" id="submit">Submit payment</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+<script src="/static/js/stripepayment.js"></script>
+
+
+{% endblock %}
